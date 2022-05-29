@@ -1,5 +1,8 @@
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils.translation import gettext_lazy as _
+
+from .managers import UserManager
 
 INSTITUTION_TYPES = [
     ('FU', 'Fundacja'),
@@ -8,8 +11,24 @@ INSTITUTION_TYPES = [
 ]
 
 
+class CustomUser(AbstractUser):
+    username = None
+    email = models.EmailField(_("email address"), unique=True)
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
+
+    objects = UserManager()
+
+    def __str__(self):
+        return self.email
+
+
 class Category(models.Model):
     name = models.CharField(max_length=128)
+
+    def __str__(self):
+        return self.name
 
 
 class Institution(models.Model):
@@ -30,4 +49,4 @@ class Donation(models.Model):
     pick_up_date = models.DateField()
     pick_up_time = models.DateTimeField()
     pick_up_comment = models.TextField()
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, default=None)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, default=None)
