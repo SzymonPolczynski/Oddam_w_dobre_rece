@@ -16,3 +16,9 @@ class SignUpForm(UserCreationForm):
         self.fields['email'].widget.attrs.update({'placeholder': ('Email')})
         self.fields['password1'].widget.attrs.update({'placeholder': ('Hasło')})
         self.fields['password2'].widget.attrs.update({'placeholder': ('Powtórz hasło')})
+
+
+class LoginForm(forms.Form):
+    username = forms.CharField(max_length=254, label="Login",
+                               widget=forms.TextInput(attrs={'placeholder': 'Login'}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Hasło'}))
