@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 
-from .models import CustomUser
+from .models import CustomUser, Donation
 
 
 class SignUpForm(UserCreationForm):
@@ -22,3 +22,10 @@ class LoginForm(forms.Form):
     username = forms.CharField(max_length=254, label="Login",
                                widget=forms.TextInput(attrs={'placeholder': 'Login'}))
     password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Hasło'}))
+
+
+class AddDonationForm(forms.ModelForm):
+    class Meta:
+        model = Donation
+        fields = ['quantity', 'categories', 'institution', 'address', 'phone_number', 'city',
+                  'zip_code', 'pick_up_date', 'pick_up_time', 'pick_up_comment']

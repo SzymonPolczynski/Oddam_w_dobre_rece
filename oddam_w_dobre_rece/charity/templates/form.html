@@ -25,60 +25,33 @@
       <div class="form--steps-container">
         <div class="form--steps-counter">Krok <span>1</span>/5</div>
 
-        <form action="form-confirmation.html" method="post">
+         <form id="donation-form" action="/add-donation/" method="post">
+          {% csrf_token %}
           <!-- STEP 1: class .active is switching steps -->
           <div data-step="1" class="active">
             <h3>Zaznacz co chcesz oddać:</h3>
+            <div id="category-checkbox">
+            <input type="hidden" id="checked-categories" name="chosen-categories"/>
 
+
+            {% for category in categories %}
             <div class="form-group form-group--checkbox">
               <label>
+
                 <input
                   type="checkbox"
                   name="categories"
-                  value="clothes-to-use"
+                  value="{{ category.id }}"
+                  data-name="{{ category.name }}"
                 />
-                <span class="checkbox"></span>
-                <span class="description"
-                  >ubrania, które nadają się do ponownego użycia</span
-                >
-              </label>
-            </div>
 
-            <div class="form-group form-group--checkbox">
-              <label>
-                <input
-                  type="checkbox"
-                  name="categories"
-                  value="clothes-useless"
-                />
                 <span class="checkbox"></span>
-                <span class="description">ubrania, do wyrzucenia</span>
+                <span class="description">{{ category.name }}</span>
               </label>
             </div>
+            {% endfor %}
+              </div>
 
-            <div class="form-group form-group--checkbox">
-              <label>
-                <input type="checkbox" name="categories" value="toys" />
-                <span class="checkbox"></span>
-                <span class="description">zabawki</span>
-              </label>
-            </div>
-
-            <div class="form-group form-group--checkbox">
-              <label>
-                <input type="checkbox" name="categories" value="books" />
-                <span class="checkbox"></span>
-                <span class="description">książki</span>
-              </label>
-            </div>
-
-            <div class="form-group form-group--checkbox">
-              <label>
-                <input type="checkbox" name="categories" value="other" />
-                <span class="checkbox"></span>
-                <span class="description">inne</span>
-              </label>
-            </div>
 
             <div class="form-group form-group--buttons">
               <button type="button" class="btn next-step">Dalej</button>
@@ -92,7 +65,7 @@
             <div class="form-group form-group--inline">
               <label>
                 Liczba 60l worków:
-                <input type="number" name="bags" step="1" min="1" />
+                <input type="number" id="bags" name="quantity" step="1" min="1" />
               </label>
             </div>
 
@@ -104,36 +77,32 @@
 
 
 
-          <!-- STEP 4 -->
+          <!-- STEP 3 -->
           <div data-step="3">
             <h3>Wybierz organizacje, której chcesz pomóc:</h3>
-
+            <div id="institution-checkbox">
+            {% for institution in institutions %}
             <div class="form-group form-group--checkbox">
               <label>
-                <input type="radio" name="organization" value="old" />
+                <input type="radio" name="institution" value="{{institution.id}}" />
                 <span class="checkbox radio"></span>
                 <span class="description">
-                  <div class="title">Fundacja “Bez domu”</div>
+                  <div class="title">{{institution.name}}</div>
                   <div class="subtitle">
-                    Cel i misja: Pomoc dla osób nie posiadających miejsca
-                    zamieszkania
+                    {{institution.description}}
                   </div>
                 </span>
+                <categories>
+                {% if institution.categories %}
+                {% for category in institution.categories.all %}
+                <input type="hidden" value="{{category.id}}"/>
+                {% endfor %}
+                {% endif %}
+                </categories>
+
               </label>
             </div>
-
-            <div class="form-group form-group--checkbox">
-              <label>
-                <input type="radio" name="organization" value="old" />
-                <span class="checkbox radio"></span>
-                <span class="description">
-                  <div class="title">Fundacja “Dla dzieci"</div>
-                  <div class="subtitle">
-                    Cel i misja: Pomoc osobom znajdującym się w trudnej sytuacji
-                    życiowej.
-                  </div>
-                </span>
-              </label>
+            {% endfor %}
             </div>
 
             <div class="form-group form-group--buttons">
@@ -142,7 +111,7 @@
             </div>
           </div>
 
-          <!-- STEP 5 -->
+          <!-- STEP 4 -->
           <div data-step="4">
             <h3>Podaj adres oraz termin odbioru rzecz przez kuriera:</h3>
 
@@ -159,13 +128,13 @@
 
                 <div class="form-group form-group--inline">
                   <label>
-                    Kod pocztowy <input type="text" name="postcode" />
+                    Kod pocztowy <input type="text" name="zip_code" />
                   </label>
                 </div>
 
                 <div class="form-group form-group--inline">
                   <label>
-                    Numer telefonu <input type="phone" name="phone" />
+                    Numer telefonu <input type="phone" name="phone_number" />
                   </label>
                 </div>
               </div>
@@ -173,28 +142,28 @@
               <div class="form-section--column">
                 <h4>Termin odbioru</h4>
                 <div class="form-group form-group--inline">
-                  <label> Data <input type="date" name="data" /> </label>
+                  <label> Data <input type="date" name="pick_up_date" /> </label>
                 </div>
 
                 <div class="form-group form-group--inline">
-                  <label> Godzina <input type="time" name="time" /> </label>
+                  <label> Godzina <input type="time" name="pick_up_time" /> </label>
                 </div>
 
                 <div class="form-group form-group--inline">
                   <label>
                     Uwagi dla kuriera
-                    <textarea name="more_info" rows="5"></textarea>
+                    <textarea name="more_info" rows="5" value=""></textarea>
                   </label>
                 </div>
               </div>
             </div>
             <div class="form-group form-group--buttons">
               <button type="button" class="btn prev-step">Wstecz</button>
-              <button type="button" class="btn next-step">Dalej</button>
+              <button id="summary-button" type="button" class="btn next-step">Dalej</button>
             </div>
           </div>
 
-          <!-- STEP 6 -->
+          <!-- STEP 5 -->
           <div data-step="5">
             <h3>Podsumowanie Twojej darowizny</h3>
 

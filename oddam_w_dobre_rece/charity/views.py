@@ -1,10 +1,12 @@
+import datetime
+
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views import View
 
-from .forms import SignUpForm, LoginForm
+from .forms import SignUpForm, LoginForm, AddDonationForm
 from .models import Institution, Donation, Category
 
 
@@ -29,7 +31,41 @@ class LandingPageView(View):
 
 class AddDonationView(View):
     def get(self, request):
-        return render(request, "form.html")
+        if not request.user.is_authenticated:
+            return redirect('/login/#login-section/')
+        categories = Category.objects.all()
+        institutions = Institution.objects.all()
+        form = AddDonationForm()
+        ctx = {
+            'categories': categories,
+            'institutions': institutions,
+            'form': form
+        }
+        return render(request, "form.html", ctx)
+
+    def post(self, request):
+        categories = request.POST.get('chosen-categories')
+        bags = int(request.POST.get('bags'))
+        institution = Institution.objects.get(pk=request.POST.get('organization'))
+        address = request.POST.get('address')
+        city = request.POST.get('city')
+        zip_code = request.POST.get('postcode')
+        phone_number = request.POST.get('phone')
+        pick_up_date = datetime.datetime.strptime(request.POST.get('data'), "%Y-%m-%d").date()
+        pick_up_time = datetime.datetime.strptime(request.POST.get('time'), "%H:%M").time()
+        pick_up_comment = request.POST.get('more_info')
+        user = request.user
+
+        donation = Donation.objects.create(quantity=bags, institution=institution, address=address,
+                                           city=city, zip_code=zip_code, phone_number=phone_number,
+                                           pick_up_date=pick_up_date, pick_up_time=pick_up_time,
+                                           pick_up_comment=pick_up_comment, user=user
+                                           )
+        for category in categories.split(','):
+            category_object = Category.objects.get(pk=category)
+            donation.categories.add(category_object)
+
+        return redirect('/confirmation#form-confirmation')
 
 
 class RegisterView(View):
