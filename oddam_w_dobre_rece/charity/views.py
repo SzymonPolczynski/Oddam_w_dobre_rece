@@ -65,7 +65,12 @@ class AddDonationView(View):
             category_object = Category.objects.get(pk=category)
             donation.categories.add(category_object)
 
-        return redirect('/confirmation#form-confirmation')
+        return redirect('/confirmation/')
+
+
+class ConfirmationView(View):
+    def get(self, request):
+        return render(request, 'form-confirmation.html')
 
 
 class RegisterView(View):
@@ -114,3 +119,8 @@ class LogoutView(View):
     def get(self, request):
         logout(request)
         return redirect("index")
+
+
+class UserProfileView(View):
+    def get(self, request):
+        return render(request, "user-profile.html")

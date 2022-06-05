@@ -53,3 +53,4 @@ class Donation(models.Model):
     pick_up_time = models.DateTimeField()
     pick_up_comment = models.TextField()
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, default=None)
+    

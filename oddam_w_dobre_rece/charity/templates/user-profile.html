@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+{% load static %}
+
+    <section id="user-profile">
+      <div class="container container--90">
+          <h2>
+            Profil użytkownika
+          </h2>
+        <h2>Imię: {{user.first_name}}</h2>
+        <h2>Nazwisko: {{user.last_name}}</h2>
+        <h2>Email: {{user.email}}</h2>
+          <h2>Przekazane dary:</h2>
+          <ul>
+          {% for donation in user.donation_set.all %}
+              <li>
+          <p style="font-size: 20px"><b>{{donation.quantity}}</b> worków zawierających
+                    {% for category in donation.categories.all %}<b>{{category}}, </b>{% endfor %}
+              dla organizacji <b>{{donation.institution.name}}</b>. Data odbioru worków: <b>{{donation.pick_up_date}}</b></p></li>
+          {% endfor %}
+          </ul>
+      </div>
+    </section>
+{% endblock content %}
